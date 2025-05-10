@@ -205,9 +205,14 @@ if (database.Icon && database.Icon.Type === 'file') {
   div.cover img {
     display: block;
     width: 100%;
-    height: 20vh;
+    height: 30vh;
     object-fit: cover;
     object-position: center 60%;
+  }
+  @media (max-width: 640px) {
+    div.cover img {
+      height: 20vh;
+    }
   }
 
   div.content {
