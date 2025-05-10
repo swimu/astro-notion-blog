@@ -68,6 +68,13 @@ if (database.Icon && database.Icon.Type === 'file') {
     <meta name="twitter:description" content={siteDescription} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImage || siteOGImage} />
+    <link rel="icon" href={getStaticFilePath('/favicon.svg')} />
+    <link rel="icon" type="image/png" href={getStaticFilePath('/favicon-96x96.png')} sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href={getStaticFilePath('/favicon.svg')} />
+    <link rel="shortcut icon" href={getStaticFilePath('/favicon.ico')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={getStaticFilePath('/apple-touch-icon.png')} />
+    <meta name="apple-mobile-web-app-title" content="すいむろぐ" />
+    <link rel="manifest" href={getStaticFilePath('/manifest.json')} />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
@@ -171,7 +178,7 @@ if (database.Icon && database.Icon.Type === 'file') {
 
   main {
     flex: 1;
-    order: 2;
+    order: 1;
     justify-content: space-between;
   }
   @media (max-width: 640px) {
@@ -181,7 +188,7 @@ if (database.Icon && database.Icon.Type === 'file') {
   }
 
   aside {
-    order: 1;
+    order: 2;
     width: 300px;
     padding: 20px 20px;
     background-color: #f4f4f4;
@@ -198,9 +205,14 @@ if (database.Icon && database.Icon.Type === 'file') {
   div.cover img {
     display: block;
     width: 100%;
-    height: 20vh;
+    height: 40vh;
     object-fit: cover;
     object-position: center 60%;
+  }
+  @media (max-width: 640px) {
+    div.cover img {
+      height: 20vh;
+    }
   }
 
   div.content {
