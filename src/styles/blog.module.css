@@ -17,7 +17,12 @@
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
-@media (max-width: 1000px) {
+@media (min-width: 750) and (max-width: 1000px) {
+  .postsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 750px) {
   .postsGrid {
     grid-template-columns: 1fr;
   }
