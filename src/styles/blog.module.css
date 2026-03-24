@@ -15,6 +15,22 @@
 .post {
   margin: 0 auto 40px;
 }
+
+.postMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.card {
+  position: relative;
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 1rem;
+  margin: 0.5rem 0;
+}
 .post footer {
   margin-top: 0.5rem;
   padding: 0;

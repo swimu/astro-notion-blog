@@ -28,11 +28,27 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
 
 <style>
   .post-featured-image {
-    padding: 0.6rem 0 0.2rem;
+    position: relative;
+    margin: 0.6rem 0 0.4rem;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background-color: #f4f4f4;
+  }
+  .post-featured-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0);
+    transition: background-color 0.2s;
+  }
+  :global(.post-card:hover) .post-featured-image::after {
+    background-color: rgba(255, 255, 255, 0.3);
   }
   .post-featured-image img {
     display: block;
-    max-width: 100%;
-    max-height: 20rem;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 </style>
