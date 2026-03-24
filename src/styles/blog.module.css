@@ -6,14 +6,46 @@
   margin: 0 auto;
   padding: 40px 0 0;
 }
-@media (max-width: 640px) {
+@media (max-width: 1000px) {
   .main footer {
     margin: 0 auto 40px;
   }
 }
 
+.postsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (min-width: 750) and (max-width: 1000px) {
+  .postsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 750px) {
+  .postsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .post {
-  margin: 0 auto 40px;
+  margin: 0;
+}
+
+.postMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.card {
+  position: relative;
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 1rem;
+  margin: 0.5rem 0;
 }
 .post footer {
   margin-top: 0.5rem;

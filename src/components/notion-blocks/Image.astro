@@ -50,5 +50,19 @@ if (block.Image.External) {
   .image > div > div img {
     display: block;
     max-width: 100%;
+    width: 75%;
+    margin: 0 auto;
+  }
+  .image > div :global(.caption) {
+    width: 75%;
+    margin: 0.3rem auto 0;
+  }
+  @media (max-width: 1000px) {
+    .image > div > div img {
+      width: 60%;
+    }
+    .image > div :global(.caption) {
+      width: 60%;
+    }
   }
 </style>
