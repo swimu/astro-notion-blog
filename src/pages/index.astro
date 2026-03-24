@@ -31,19 +31,21 @@ const [posts, tags, numberOfPages] = await Promise.all([
       posts.length === 0 ? (
         <NoContents contents={posts} />
       ) : (
-        posts.map((post) => (
-          <div class={styles.post} key={post.Slug}>
-            <div class={`${styles.card} post-card`}>
-              <PostFeaturedImage post={post} />
-              <div class={styles.postMeta}>
-                <PostDate post={post} />
-                <PostTags post={post} />
+        <div class={styles.postsGrid}>
+          {posts.map((post) => (
+            <div class={styles.post} key={post.Slug}>
+              <div class={`${styles.card} post-card`}>
+                <PostFeaturedImage post={post} />
+                <div class={styles.postMeta}>
+                  <PostDate post={post} />
+                  <PostTags post={post} />
+                </div>
+                <PostTitle post={post} />
+                <PostExcerpt post={post} />
               </div>
-              <PostTitle post={post} />
-              <PostExcerpt post={post} />
             </div>
-          </div>
-        ))
+          ))}
+        </div>
       )
     }
 

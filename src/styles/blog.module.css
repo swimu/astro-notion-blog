@@ -12,8 +12,19 @@
   }
 }
 
+.postsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+@media (max-width: 640px) {
+  .postsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .post {
-  margin: 0 auto 40px;
+  margin: 0;
 }
 
 .postMeta {
