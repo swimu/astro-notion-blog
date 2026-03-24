@@ -8,6 +8,8 @@ jobs:
   format:
     name: Prettier
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Check out Git repository
