@@ -6,14 +6,8 @@ import {
   getNumberOfPages,
 } from '../lib/notion/client.ts'
 import Layout from '../layouts/Layout.astro'
-import NoContents from '../components/NoContents.astro'
-import PostDate from '../components/PostDate.astro'
-import PostTags from '../components/PostTags.astro'
-import PostTitle from '../components/PostTitle.astro'
-import PostFeaturedImage from '../components/PostFeaturedImage.astro'
-import PostExcerpt from '../components/PostExcerpt.astro'
+import PostsGrid from '../components/PostsGrid.astro'
 import Pagination from '../components/Pagination.astro'
-import BlogTagsLink from '../components/BlogTagsLink.astro'
 import styles from '../styles/blog.module.css'
 
 export const prerender = true
@@ -27,36 +21,13 @@ const [posts, tags, numberOfPages] = await Promise.all([
 
 <Layout>
   <div slot="main" class={styles.main}>
-    {
-      posts.length === 0 ? (
-        <NoContents contents={posts} />
-      ) : (
-        <div class={styles.postsGrid}>
-          {posts.map((post) => (
-            <div class={styles.post} key={post.Slug}>
-              <div class={`${styles.card} post-card`}>
-                <PostFeaturedImage post={post} />
-                <div class={styles.postMeta}>
-                  <PostDate post={post} />
-                  <PostTags post={post} />
-                </div>
-                <PostTitle post={post} />
-                <PostExcerpt post={post} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )
-    }
+    <PostsGrid posts={posts} />
 
     <footer>
       <Pagination currentPage={1} numberOfPages={numberOfPages} />
     </footer>
   </div>
 
-  <div slot="aside" class={styles.aside}>
-    <BlogTagsLink heading="タグ" tags={tags} />
-  </div>
 </Layout>
 
 <style is:global>

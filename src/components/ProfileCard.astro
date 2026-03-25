@@ -1,0 +1,84 @@
+---
+export interface Props {
+  name: string
+  bio: string
+  iconUrl?: string
+}
+
+const { name, bio, iconUrl } = Astro.props
+---
+
+<div class="profile-card">
+  <div class="profile-icon-wrapper">
+    {iconUrl ? (
+      <img src={iconUrl} alt={name} class="profile-icon" />
+    ) : (
+      <div class="profile-icon-placeholder">{name.charAt(0)}</div>
+    )}
+  </div>
+  <div class="profile-body">
+    <p class="profile-name">{name}</p>
+    <p class="profile-bio">{bio}</p>
+  </div>
+</div>
+
+<style>
+  .profile-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    padding: 0 16px 16px;
+    text-align: center;
+    position: relative;
+    padding-top: 56px;
+    max-width: 300px;
+    margin: 0 auto 24px;
+  }
+
+  .profile-icon-wrapper {
+    position: absolute;
+    top: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    background-color: #4ac6d9;
+  }
+
+  .profile-icon {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    margin: 10%;
+  }
+
+  .profile-icon-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #8a6a4a;
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .profile-name {
+    margin: 0 0 6px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #333;
+  }
+
+  .profile-bio {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+  }
+</style>

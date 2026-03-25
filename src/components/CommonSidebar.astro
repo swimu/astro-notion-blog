@@ -1,0 +1,42 @@
+---
+import type { SelectProperty } from '../lib/interfaces.ts'
+import ProfileCard from './ProfileCard.astro'
+import SearchButton from './SearchButton.astro'
+import BlogTagsLink from './BlogTagsLink.astro'
+
+export interface Props {
+  tags: SelectProperty[]
+}
+
+const { tags } = Astro.props
+---
+
+<div class="sidebar-inner">
+  <ProfileCard
+    name="swimu"
+    bio="旅行と船旅、おいしいものが好きなひと。"
+    iconUrl="/favicon.svg"
+  />
+  <SearchButton />
+  <BlogTagsLink heading="タグ" tags={tags} />
+</div>
+
+<style>
+  .sidebar-inner {
+    padding-top: 150px;
+    margin-right: auto;
+  }
+  .sidebar-inner :global(.profile-card) {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  @media (max-width: 1000px) {
+    .sidebar-inner {
+      padding-top: 0;
+      padding-right: 0;
+    }
+    .sidebar-inner :global(.profile-card) {
+      margin-left: auto;
+    }
+  }
+</style>
