@@ -38,7 +38,6 @@ if (database.Cover) {
     }
   }
 }
-console.log('database.Cover:', database.Cover)
 
 ---
 
@@ -96,7 +95,7 @@ console.log('database.Cover:', database.Cover)
                 <div class="site-icon-wrap">
                   <img src={getStaticFilePath('/favicon.svg')} alt="Site icon" class="site-icon" />
                 </div>
-                <div>
+                <div class="header-text">
                   <h1>
                     <a href={getNavLink('/')}>
                       {database.Title}
@@ -207,7 +206,10 @@ console.log('database.Cover:', database.Cover)
   }
   @media (max-width: 1000px) {
     .header-inner {
-    margin-top: 5px;
+      margin-top: 5px;
+    }
+    .header-text {
+      margin-top: -10px;
     }
   }
 
@@ -215,8 +217,8 @@ console.log('database.Cover:', database.Cover)
     flex-shrink: 0;
     align-self: flex-start;
     margin-top: -70px;
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     background-color: #4ac6d9;
     border-radius: 8px;
 
