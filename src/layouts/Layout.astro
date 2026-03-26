@@ -39,14 +39,6 @@ if (database.Cover) {
   }
 }
 
-let customIconURL: string
-if (database.Icon && database.Icon.Type === 'file') {
-  try {
-    customIconURL = filePath(new URL(database.Icon.Url))
-  } catch {
-    console.log('Invalid DB custom icon URL: ', database.Icon?.Url)
-  }
-}
 ---
 
 <!DOCTYPE html>
@@ -85,7 +77,7 @@ if (database.Icon && database.Icon.Type === 'file') {
   <body>
     <GoogleAnalytics trackingId={PUBLIC_GA_TRACKING_ID} />
     <div class="container">
-      <header>
+      <header class="cover-header">
         {
           coverImageURL && (
             <div class="cover">
@@ -99,36 +91,20 @@ if (database.Icon && database.Icon.Type === 'file') {
         <main>
           <div class="content">
             <header>
-              <h1>
-                <a href={getNavLink('/')}>
-                  {
-                    database.Icon && database.Icon.Type === 'emoji' ? (
-                      <>
-                        <span>{database.Icon.Emoji}</span>
-                        {database.Title}
-                      </>
-                    ) : database.Icon && database.Icon.Type === 'external' ? (
-                      <>
-                        <img src={database.Icon.Url} alt="Site icon image" />
-                        {database.Title}
-                      </>
-                    ) : database.Icon && database.Icon.Type === 'file' ? (
-                      <>
-                        <img
-                          src={customIconURL}
-                          class="custom-icon"
-                          alt="Site icon image"
-                        />
-                        {database.Title}
-                      </>
-                    ) : (
-                      database.Title
-                    )
-                  }
-                </a>
-              </h1>
-              <div class="description">
-                {database.Description}
+              <div class="header-inner">
+                <div class="site-icon-wrap">
+                  <img src={getStaticFilePath('/favicon.svg')} alt="Site icon" class="site-icon" />
+                </div>
+                <div>
+                  <h1>
+                    <a href={getNavLink('/')}>
+                      {database.Title}
+                    </a>
+                  </h1>
+                  <div class="description">
+                    {database.Description}
+                  </div>
+                </div>
               </div>
             </header>
 
@@ -222,6 +198,37 @@ if (database.Icon && database.Icon.Type === 'file') {
     }
   }
 
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .site-icon-wrap {
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: -15px;
+    width: 90px;
+    height: 90px;
+    background-color: #4ac6d9;
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .site-icon {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+  }
+  @media (max-width: 1000px) {
+    .site-icon-wrap {
+      width: 72px;
+      height: 72px;
+    }
+  }
+
   div.content {
     padding: 20px 40px;
     max-width: 900px;
@@ -247,26 +254,6 @@ if (database.Icon && database.Icon.Type === 'file') {
   main header h1 a:hover {
     color: inherit;
   }
-  main header h1 a span,
-  main header h1 a img {
-    display: inline-block;
-    font-size: 1.1em;
-  }
-  main header h1 a span {
-    margin-right: 0.3em;
-    margin-left: -0.1rem;
-  }
-  main header h1 a img {
-    width: 1.2em;
-    height: 1.2em;
-    margin-right: 0.2em;
-    margin-left: -0.3rem;
-    vertical-align: sub;
-  }
-  main header h1 a img.custom-icon {
-    border-radius: var(--radius);
-  }
-
   main header div.description {
     padding: 0.3rem 0 0.6rem;
     font-size: 0.95rem;
