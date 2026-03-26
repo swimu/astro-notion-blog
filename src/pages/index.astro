@@ -2,7 +2,6 @@
 import { NUMBER_OF_POSTS_PER_PAGE } from '../server-constants.ts'
 import {
   getPosts,
-  getAllTags,
   getNumberOfPages,
 } from '../lib/notion/client.ts'
 import Layout from '../layouts/Layout.astro'
@@ -12,9 +11,8 @@ import styles from '../styles/blog.module.css'
 
 export const prerender = true
 
-const [posts, tags, numberOfPages] = await Promise.all([
+const [posts, numberOfPages] = await Promise.all([
   getPosts(NUMBER_OF_POSTS_PER_PAGE),
-  getAllTags(),
   getNumberOfPages(),
 ])
 ---
