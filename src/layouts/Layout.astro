@@ -199,15 +199,21 @@ if (database.Cover) {
   }
 
   .header-inner {
+    margin-top: -40px;
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+  @media (max-width: 1000px) {
+    .header-inner {
+    margin-top: -15px;
+    }
   }
 
   .site-icon-wrap {
     flex-shrink: 0;
     align-self: flex-start;
-    margin-top: -15px;
+    margin-top: -50px;
     width: 90px;
     height: 90px;
     background-color: #4ac6d9;
