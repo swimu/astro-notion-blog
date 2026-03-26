@@ -1,5 +1,7 @@
 ---
 import type { Post } from '../lib/interfaces.ts'
+import { Icon } from 'astro-icon/components'
+
 export interface Props {
   post: Post
 }
@@ -7,11 +9,49 @@ export interface Props {
 const { post } = Astro.props
 ---
 
-<button class="like-button" data-slug={post.Slug}>❤️ 0</button>
+<button class="like-button" data-slug={post.Slug}>
+  <Icon name="mdi:cards-heart-outline" class="icon-outline" />
+  <Icon name="mdi:cards-heart" class="icon-filled" />
+  <span class="like-count">{post.Like ?? 0}</span>
+</button>
 
 <style>
   .like-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     margin-top: 1rem;
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #555;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .like-button:hover {
+    background: #fff0f0;
+    border-color: #f87171;
+  }
+  .like-button.liked {
+    background: #fff0f0;
+    border-color: #f87171;
+    color: #ef4444;
+  }
+  .icon-outline,
+  .icon-filled {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+  .icon-filled {
+    display: none;
+  }
+  .like-button.liked .icon-outline {
+    display: none;
+  }
+  .like-button.liked .icon-filled {
+    display: inline;
   }
 </style>
 
@@ -20,24 +60,23 @@ const { post } = Astro.props
     const button = document.querySelector('.like-button')
     const slug = button.dataset.slug
     const url = `/api/likes.json?slug=${slug}`
+    const countEl = button.querySelector('.like-count')
 
     const res = await fetch(url)
-    if (res.status !== 200) {
-      throw new Error('Failed to like get')
+    if (res.ok) {
+      const { likes } = await res.json()
+      countEl.textContent = likes
     }
 
-    const { likes } = await res.json()
-    console.log(likes)
-    button.textContent = `❤️ ${likes}`
-
     button.addEventListener('click', async () => {
+      if (button.disabled) return
       const res = await fetch(url, { method: 'POST' })
-      if (res.status !== 200) {
-        throw new Error('Failed to like post')
+      if (res.ok) {
+        const { likes } = await res.json()
+        countEl.textContent = likes
+        button.classList.add('liked')
+        button.disabled = true
       }
-
-      const { likes } = await res.json()
-      button.textContent = `❤️ ${likes}`
     })
   })
 </script>

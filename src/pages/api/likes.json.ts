@@ -1,7 +1,9 @@
 import type { APIRoute, APIContext } from 'astro'
 import { getPostBySlug, incrementLikes } from '../../lib/notion/client'
 
-export const get: APIRoute = async ({ request }: APIContext) => {
+export const prerender = false
+
+export const GET: APIRoute = async ({ request }: APIContext) => {
   const url = new URL(request.url)
   const params = new URLSearchParams(url.search)
   const slug = params.get('slug')
@@ -24,7 +26,7 @@ export const get: APIRoute = async ({ request }: APIContext) => {
   })
 }
 
-export const post: APIRoute = async ({ request }: APIContext) => {
+export const POST: APIRoute = async ({ request }: APIContext) => {
   const url = new URL(request.url)
   const params = new URLSearchParams(url.search)
   const slug = params.get('slug')
