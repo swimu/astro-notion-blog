@@ -64,13 +64,13 @@ npm run cache:purge  # 全キャッシュ削除（nx + tmp/）
 
 ### 環境変数
 
-| 変数                 | 必須 | 説明                     |
-| -------------------- | ---- | ------------------------ |
+| 変数                 | 必須 | 説明                              |
+| -------------------- | ---- | --------------------------------- |
 | `NOTION_API_SECRET`  | Yes  | Notion インテグレーショントークン |
-| `DATABASE_ID`        | Yes  | Notion データベース ID   |
-| `CUSTOM_DOMAIN`      | No   | 例: `example.com`        |
-| `BASE_PATH`          | No   | サブディレクトリパス     |
-| `REQUEST_TIMEOUT_MS` | No   | デフォルト: 10000ms      |
+| `DATABASE_ID`        | Yes  | Notion データベース ID            |
+| `CUSTOM_DOMAIN`      | No   | 例: `example.com`                 |
+| `BASE_PATH`          | No   | サブディレクトリパス              |
+| `REQUEST_TIMEOUT_MS` | No   | デフォルト: 10000ms               |
 
 ### カスタム Astro ビルドインテグレーション（astro.config.mjs）
 
