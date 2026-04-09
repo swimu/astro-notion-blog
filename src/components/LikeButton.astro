@@ -10,9 +10,11 @@ const { post } = Astro.props
 ---
 
 <button class="like-button" data-slug={post.Slug}>
-  <Icon name="mdi:cards-heart-outline" class="icon-outline" />
-  <Icon name="mdi:cards-heart" class="icon-filled" />
-  <span class="like-count">{post.Like ?? 0}</span>
+  <span class="icon-wrap">
+    <Icon name="mdi:cards-heart-outline" class="icon-outline" />
+    <Icon name="mdi:cards-heart" class="icon-filled" />
+  </span>
+  <span class="like-count">-</span>
 </button>
 
 <style>
@@ -30,7 +32,7 @@ const { post } = Astro.props
     color: #555;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
-  .like-button:hover {
+  .like-button:hover:not(.liked) {
     background: #fff0f0;
     border-color: #f87171;
   }
@@ -38,6 +40,15 @@ const { post } = Astro.props
     background: #fff0f0;
     border-color: #f87171;
     color: #ef4444;
+    cursor: default;
+  }
+  .icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .like-button:active:not(.liked) .icon-wrap {
+    transform: scale(1.4);
   }
   .icon-outline,
   .icon-filled {
@@ -53,29 +64,76 @@ const { post } = Astro.props
   .like-button.liked .icon-filled {
     display: inline;
   }
+  .like-count {
+    display: inline-block;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .like-count.animating {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 </style>
 
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const button = document.querySelector('.like-button')
+    if (!button) return
+
     const slug = button.dataset.slug
     const url = `/api/likes.json?slug=${slug}`
+    const storageKey = `liked:${slug}`
     const countEl = button.querySelector('.like-count')
+    let count = 0
+    let loaded = false
 
-    const res = await fetch(url)
-    if (res.ok) {
-      const { likes } = await res.json()
-      countEl.textContent = likes
+    // 既にいいね済みならUIに反映
+    if (localStorage.getItem(storageKey)) {
+      button.classList.add('liked')
     }
 
+    // 最新のカウントを取得
+    fetch(url)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data) {
+          count = data.likes
+          countEl.textContent = count
+          loaded = true
+        }
+      })
+      .catch(() => {})
+
     button.addEventListener('click', async () => {
-      if (button.disabled) return
-      const res = await fetch(url, { method: 'POST' })
-      if (res.ok) {
-        const { likes } = await res.json()
-        countEl.textContent = likes
-        button.classList.add('liked')
-        button.disabled = true
+      if (button.classList.contains('liked') || !loaded) return
+
+      const prev = count
+
+      // 楽観的更新
+      count = prev + 1
+      countEl.textContent = count
+      countEl.classList.add('animating')
+      button.classList.add('liked')
+      setTimeout(() => countEl.classList.remove('animating'), 300)
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+        if (res.ok) {
+          const { likes } = await res.json()
+          count = likes
+          countEl.textContent = likes
+          localStorage.setItem(storageKey, '1')
+        } else {
+          count = prev
+          countEl.textContent = prev
+          button.classList.remove('liked')
+        }
+      } catch {
+        count = prev
+        countEl.textContent = prev
+        button.classList.remove('liked')
       }
     })
   })
