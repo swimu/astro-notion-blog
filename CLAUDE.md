@@ -1,84 +1,82 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは Claude Code (claude.ai/code) がこのリポジトリで作業する際のガイドです。
 
-## Commands
+## コマンド
 
 ```bash
-# Development
-npm run dev          # Start local dev server
-npm run build        # Production build
-npm run build:cached # Build with cached Notion content (faster)
-npm run preview      # Preview production build
+# 開発
+npm run dev          # ローカル開発サーバー起動
+npm run build        # 本番ビルド
+npm run build:cached # キャッシュ済み Notion データでビルド（高速）
+npm run preview      # 本番ビルドのプレビュー
 
-# Code quality
-npm run lint         # ESLint for .js/.ts/.astro files
-npm run format       # Prettier formatting
+# コード品質
+npm run lint         # ESLint（.js/.ts/.astro）
+npm run format       # Prettier フォーマット
 
-# Notion data caching
-npm run cache:fetch  # Fetch and cache Notion blog content to tmp/
-npm run cache:purge  # Clear all caches (nx + tmp/)
+# Notion データキャッシュ
+npm run cache:fetch  # Notion ブログデータを tmp/ にキャッシュ
+npm run cache:purge  # 全キャッシュ削除（nx + tmp/）
 ```
 
-There are no tests defined in this project.
+テストは定義されていない。
 
-## Architecture
+## アーキテクチャ
 
-This is a **Notion-powered Astro blog** that fetches content from a Notion database and generates a static site.
+**Notion をデータソースとした Astro 製ブログ**。Notion データベースから記事を取得し、静的サイトを生成する。
 
-### Data Flow
+### データフロー
 
-1. Build fetches posts from Notion database via `@notionhq/client` (filtering by `Published` checkbox and `Date <= now`)
-2. Block content is fetched recursively and cached to `tmp/{blockId}.json`
-3. Images are downloaded locally, EXIF-stripped, and resized via `sharp`
-4. Astro generates static HTML; interactive components use React (client-side hydration)
-5. API routes (`/api/likes.json`) run server-side on Vercel
+1. ビルド時に `@notionhq/client` で Notion データベースから記事を取得（`Published` チェックボックスと `Date <= now` でフィルタ）
+2. ブロック内容を再帰的に取得し `tmp/{blockId}.json` にキャッシュ
+3. 画像をローカルにダウンロードし、`sharp` で EXIF 除去・リサイズ
+4. Astro が静的 HTML を生成。インタラクティブな要素は vanilla JS（`<script is:inline>`）で実装
+5. API ルート（`/api/likes.json`）は Vercel 上でサーバーサイド実行
 
-### Key Files
+### 主要ファイル
 
-- `src/server-constants.ts` — All env vars and site-wide constants (posts per page, timeouts)
-- `src/lib/notion/client.ts` — Entire Notion API integration: fetching posts, blocks, incrementing likes
-- `src/lib/notion/interfaces.ts` — TypeScript types for all Notion data structures
-- `src/layouts/Layout.astro` — Root HTML layout with OG meta, sidebar slot, GA
-- `src/pages/posts/[slug].astro` — Post detail page; uses `getStaticPaths()` for SSG
-- `src/pages/api/likes.json.ts` — GET/POST API for like counts (server-rendered, `prerender = false`)
+- `src/server-constants.ts` — 環境変数・サイト全体の定数（1ページあたりの記事数、タイムアウト等）
+- `src/lib/notion/client.ts` — Notion API 統合の全体：記事取得、ブロック取得、いいねインクリメント
+- `src/lib/notion/interfaces.ts` — Notion データ構造の TypeScript 型定義
+- `src/layouts/Layout.astro` — ルート HTML レイアウト（OG メタ、サイドバー slot、GA）
+- `src/pages/posts/[slug].astro` — 記事詳細ページ。`getStaticPaths()` で SSG
+- `src/pages/api/likes.json.ts` — いいね数の GET/POST API（`prerender = false`）
 
-### Rendering Strategy
+### レンダリング戦略
 
-- `output: 'server'` with Vercel adapter — most pages are SSR by default
-- Post pages use `export const prerender = true` (or `getStaticPaths`) for static generation
-- API routes (`/api/`) always use server-side rendering
+- `output: 'server'` + Vercel アダプター — デフォルトは SSR
+- 記事ページは `export const prerender = true`（`getStaticPaths`）で静的生成
+- API ルート（`/api/`）は常にサーバーサイドレンダリング
 
-### Notion Block Rendering
+### Notion ブロック描画
 
-Each Notion block type has its own component in `src/components/notion-blocks/`. Text annotations (bold, italic, code, etc.) are in `src/components/notion-blocks/annotations/`. The top-level dispatcher is `src/components/NotionBlocks.astro`.
+各 Notion ブロックタイプに対応するコンポーネントが `src/components/notion-blocks/` にある。テキスト装飾（太字、斜体、コード等）は `src/components/notion-blocks/annotations/`。トップレベルのディスパッチャーは `src/components/NotionBlocks.astro`。
 
 ### LikeButton
 
-`src/components/LikeButton.tsx` is a React component that:
+`src/components/LikeButton.astro` は `<script is:inline>` による vanilla JS コンポーネント:
 
-- Checks `localStorage` for `liked:{slug}` to prevent double-liking
-- Makes GET to `/api/likes.json?slug=` on mount
-- Makes POST to `/api/likes.json?slug=` to increment
-- Uses optimistic UI (increments immediately, disables button)
+- `localStorage` の `liked:{slug}` で二重いいね防止
+- GET `/api/likes.json?slug=` で最新カウント取得
+- POST `/api/likes.json?slug=` でいいね送信
+- 楽観的 UI（即座にカウント+1、失敗時ロールバック）
 
-In `[slug].astro` it is rendered with `client:visible` for lazy hydration.
+### 環境変数
 
-### Environment Variables
+| 変数                 | 必須 | 説明                     |
+| -------------------- | ---- | ------------------------ |
+| `NOTION_API_SECRET`  | Yes  | Notion インテグレーショントークン |
+| `DATABASE_ID`        | Yes  | Notion データベース ID   |
+| `CUSTOM_DOMAIN`      | No   | 例: `example.com`        |
+| `BASE_PATH`          | No   | サブディレクトリパス     |
+| `REQUEST_TIMEOUT_MS` | No   | デフォルト: 10000ms      |
 
-| Variable             | Required | Description              |
-| -------------------- | -------- | ------------------------ |
-| `NOTION_API_SECRET`  | Yes      | Notion integration token |
-| `DATABASE_ID`        | Yes      | Notion database ID       |
-| `CUSTOM_DOMAIN`      | No       | e.g. `example.com`       |
-| `BASE_PATH`          | No       | Sub-directory path       |
-| `REQUEST_TIMEOUT_MS` | No       | Default: 10000ms         |
+### カスタム Astro ビルドインテグレーション（astro.config.mjs）
 
-### Custom Astro Build Integrations (astro.config.mjs)
+ビルド時に実行される4つのカスタムインテグレーション:
 
-Four custom integrations run at build time:
-
-- `CoverImageDownloader` — Downloads database cover image
-- `FeaturedImageDownloader` — Downloads all post featured images
-- `CustomIconDownloader` — Downloads custom post icons
-- `PublicNotionCopier` — Copies downloaded assets to the output directory
+- `CoverImageDownloader` — データベースのカバー画像をダウンロード
+- `FeaturedImageDownloader` — 全記事のアイキャッチ画像をダウンロード
+- `CustomIconDownloader` — カスタム記事アイコンをダウンロード
+- `PublicNotionCopier` — ダウンロードしたアセットを出力ディレクトリにコピー
