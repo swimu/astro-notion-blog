@@ -1,5 +1,9 @@
 import type { APIRoute, APIContext } from 'astro'
-import { getPostBySlug, getLatestLikes, incrementLikes } from '../../lib/notion/client'
+import {
+  getPostBySlug,
+  getLatestLikes,
+  incrementLikes,
+} from '../../lib/notion/client'
 
 export const prerender = false
 
