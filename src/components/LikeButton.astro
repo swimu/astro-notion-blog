@@ -116,7 +116,10 @@ const { post } = Astro.props
       setTimeout(() => countEl.classList.remove('animating'), 300)
 
       try {
-        const res = await fetch(url, { method: 'POST' })
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
         if (res.ok) {
           const { likes } = await res.json()
           count = likes
