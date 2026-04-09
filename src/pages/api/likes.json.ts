@@ -1,5 +1,5 @@
 import type { APIRoute, APIContext } from 'astro'
-import { getPostBySlug, incrementLikes } from '../../lib/notion/client'
+import { getPostBySlug, getLatestLikes, incrementLikes } from '../../lib/notion/client'
 
 export const prerender = false
 
@@ -18,7 +18,9 @@ export const GET: APIRoute = async ({ request }: APIContext) => {
     return new Response(null, { status: 404 })
   }
 
-  return new Response(JSON.stringify({ likes: post.Like }), {
+  const likes = await getLatestLikes(post)
+
+  return new Response(JSON.stringify({ likes }), {
     status: 200,
     headers: {
       'Content-Type': 'application/json',

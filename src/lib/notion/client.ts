@@ -229,12 +229,32 @@ export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   )
 }
 
+export async function getLatestLikes(post: Post): Promise<number> {
+  const page = (await client.pages.retrieve({
+    page_id: post.PageId,
+  })) as responses.PageObject
+
+  const latestPost = _buildPost(page)
+  return latestPost.Like || 0
+}
+
 export async function incrementLikes(post: Post): Promise<Post | null> {
+  // Notion APIから最新のページデータを取得（キャッシュをバイパス）
+  const page = (await client.pages.retrieve({
+    page_id: post.PageId,
+  })) as responses.PageObject
+
+  if (!page) {
+    return null
+  }
+
+  const currentPost = _buildPost(page)
+
   const params: requestParams.UpdatePage = {
     page_id: post.PageId,
     properties: {
       Like: {
-        number: (post.Like || 0) + 1,
+        number: (currentPost.Like || 0) + 1,
       },
     },
   }
