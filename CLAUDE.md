@@ -37,7 +37,7 @@ npm run cache:purge  # 全キャッシュ削除（nx + tmp/）
 ### 主要ファイル
 
 - `src/server-constants.ts` — 環境変数・サイト全体の定数（1ページあたりの記事数、タイムアウト等）
-- `src/lib/notion/client.ts` — Notion API 統合の全体：記事取得、ブロック取得、いいねインクリメント
+- `src/lib/notion/client.ts` — Notion API 統合の全体：記事取得、ブロック取得、いいね取得・インクリメント
 - `src/lib/notion/interfaces.ts` — Notion データ構造の TypeScript 型定義
 - `src/layouts/Layout.astro` — ルート HTML レイアウト（OG メタ、サイドバー slot、GA）
 - `src/pages/posts/[slug].astro` — 記事詳細ページ。`getStaticPaths()` で SSG
@@ -53,13 +53,18 @@ npm run cache:purge  # 全キャッシュ削除（nx + tmp/）
 
 各 Notion ブロックタイプに対応するコンポーネントが `src/components/notion-blocks/` にある。テキスト装飾（太字、斜体、コード等）は `src/components/notion-blocks/annotations/`。トップレベルのディスパッチャーは `src/components/NotionBlocks.astro`。
 
-### LikeButton
+### いいね機能
+
+**注意: `getAllPosts()` はメモリキャッシュ（`postsCache`）を使うため、Like 値が古くなる。** いいね関連の API では Notion API を直接呼び出してキャッシュをバイパスする必要がある。
+
+- `getLatestLikes(post)` — Notion API（`pages.retrieve`）から最新の Like 値を直接取得（キャッシュバイパス）
+- `incrementLikes(post)` — Notion API から最新値を取得してからインクリメント（キャッシュバイパス）
 
 `src/components/LikeButton.astro` は `<script is:inline>` による vanilla JS コンポーネント:
 
 - `localStorage` の `liked:{slug}` で二重いいね防止
-- GET `/api/likes.json?slug=` で最新カウント取得
-- POST `/api/likes.json?slug=` でいいね送信
+- GET `/api/likes.json?slug=` で最新カウント取得（Notion API 直接呼び出し）
+- POST `/api/likes.json?slug=` でいいね送信（Notion API 直接呼び出し）
 - 楽観的 UI（即座にカウント+1、失敗時ロールバック）
 
 ### 環境変数
