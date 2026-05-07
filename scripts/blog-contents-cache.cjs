@@ -3,11 +3,29 @@ const { Client } = require('@notionhq/client');
 const cliProgress = require('cli-progress');
 const { PromisePool } = require('@supercharge/promise-pool');
 
-const notion = new Client({ auth: process.env.NOTION_API_SECRET });
+const notion = new Client({
+  auth: process.env.NOTION_API_SECRET,
+  notionVersion: '2026-03-11',
+});
 
 const getAllPages = async () => {
-  const params = {
+  const dbResponse = await notion.databases.retrieve({
     database_id: process.env.DATABASE_ID,
+  });
+  if (!dbResponse) {
+    throw new Error('Failed to retrieve database information');
+  }
+
+  const dataSourceId =
+    dbResponse.data_sources && dbResponse.data_sources.length > 0
+      ? dbResponse.data_sources[0].id
+      : null;
+  if (!dataSourceId) {
+    throw new Error('Database does not have a data source ID');
+  }
+
+  const params = {
+    data_source_id: dataSourceId,
     filter: {
       and: [
         {
@@ -28,7 +46,7 @@ const getAllPages = async () => {
 
   let results = [];
   while (true) {
-    const res = await notion.databases.query(params);
+    const res = await notion.dataSources.query(params);
 
     results = results.concat(res.results);
 
