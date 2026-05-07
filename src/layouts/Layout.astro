@@ -1,7 +1,8 @@
 ---
 import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX } from '../server-constants.ts'
 import { getDatabase, getAllTags } from '../lib/notion/client.ts'
-import { getNavLink, getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
+import { getNavLink, getStaticFilePath } from '../lib/blog-helpers.ts'
+import { COVER_IMAGE_URL } from '../generated/cover-image.ts'
 import '../styles/syntax-coloring.css'
 import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import SearchModal from '../components/SearchModal.astro'
@@ -26,18 +27,7 @@ const siteOGImage = new URL(
   Astro.site
 )
 
-let coverImageURL: string
-if (database.Cover) {
-  if (database.Cover.Type === 'external') {
-    coverImageURL = database.Cover.Url
-  } else if (database.Cover.Type === 'file') {
-    try {
-      coverImageURL = filePath(new URL(database.Cover.Url))
-    } catch {
-      console.log('Invalid DB cover image URL: ', database.Cover?.Url)
-    }
-  }
-}
+const coverImageURL = COVER_IMAGE_URL
 
 ---
 
@@ -81,7 +71,7 @@ if (database.Cover) {
         {
           coverImageURL && (
             <div class="cover">
-              <img src={coverImageURL} alt="Site cover image" loading="lazy" />
+              <img src={coverImageURL} alt="Site cover image" fetchpriority="high" />
             </div>
           )
         }
