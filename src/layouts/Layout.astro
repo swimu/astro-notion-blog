@@ -57,6 +57,9 @@ const coverImageURL = COVER_IMAGE_URL
     <link rel="apple-touch-icon" sizes="180x180" href={getStaticFilePath('/apple-touch-icon.png')} />
     <meta name="apple-mobile-web-app-title" content="すいむろぐ" />
     <link rel="manifest" href={getStaticFilePath('/manifest.json')} />
+    {coverImageURL && (
+      <link rel="preload" as="image" href={coverImageURL} fetchpriority="high" />
+    )}
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
