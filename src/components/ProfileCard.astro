@@ -11,7 +11,7 @@ const { name, bio, iconUrl } = Astro.props
 <div class="profile-card">
   <div class="profile-icon-wrapper">
     {iconUrl ? (
-      <img src={iconUrl} alt={name} class="profile-icon" />
+      <img src={iconUrl} alt={name} class="profile-icon" fetchpriority="high" />
     ) : (
       <div class="profile-icon-placeholder">{name.charAt(0)}</div>
     )}

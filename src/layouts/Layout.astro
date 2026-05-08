@@ -1,7 +1,8 @@
 ---
 import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX } from '../server-constants.ts'
 import { getDatabase, getAllTags } from '../lib/notion/client.ts'
-import { getNavLink, getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
+import { getNavLink, getStaticFilePath } from '../lib/blog-helpers.ts'
+import { COVER_IMAGE_URL } from '../generated/cover-image.ts'
 import '../styles/syntax-coloring.css'
 import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import SearchModal from '../components/SearchModal.astro'
@@ -26,18 +27,7 @@ const siteOGImage = new URL(
   Astro.site
 )
 
-let coverImageURL: string
-if (database.Cover) {
-  if (database.Cover.Type === 'external') {
-    coverImageURL = database.Cover.Url
-  } else if (database.Cover.Type === 'file') {
-    try {
-      coverImageURL = filePath(new URL(database.Cover.Url))
-    } catch {
-      console.log('Invalid DB cover image URL: ', database.Cover?.Url)
-    }
-  }
-}
+const coverImageURL = COVER_IMAGE_URL
 
 ---
 
@@ -67,6 +57,9 @@ if (database.Cover) {
     <link rel="apple-touch-icon" sizes="180x180" href={getStaticFilePath('/apple-touch-icon.png')} />
     <meta name="apple-mobile-web-app-title" content="すいむろぐ" />
     <link rel="manifest" href={getStaticFilePath('/manifest.json')} />
+    {coverImageURL && (
+      <link rel="preload" as="image" href={coverImageURL} fetchpriority="high" />
+    )}
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
@@ -81,7 +74,7 @@ if (database.Cover) {
         {
           coverImageURL && (
             <div class="cover">
-              <img src={coverImageURL} alt="Site cover image" loading="lazy" />
+              <img src={coverImageURL} alt="Site cover image" fetchpriority="high" />
             </div>
           )
         }
@@ -93,7 +86,7 @@ if (database.Cover) {
             <header>
               <div class="header-inner">
                 <div class="site-icon-wrap">
-                  <img src={getStaticFilePath('/favicon.svg')} alt="Site icon" class="site-icon" />
+                  <img src={getStaticFilePath('/favicon-96x96.png')} alt="Site icon" class="site-icon" fetchpriority="high" />
                 </div>
                 <div class="header-text">
                   <h1>
